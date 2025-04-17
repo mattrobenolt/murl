@@ -18,12 +18,24 @@ import (
 
 var stderr = bufio.NewWriter(os.Stderr)
 
+type nopCloser struct {
+	io.Writer
+}
+
+func (nopCloser) Close() error {
+	return nil
+}
+
 func openOutput() (io.WriteCloser, bool) {
 	switch *flagOutput {
 	case "":
-		return os.Stdout, true
-	case "-":
-		return os.Stdout, false
+		return nopCloser{os.Stdout}, true
+	case "-", "/dev/stdout":
+		return nopCloser{os.Stdout}, false
+	case "/dev/stderr":
+		return nopCloser{os.Stderr}, false
+	case "/dev/null":
+		return nopCloser{io.Discard}, false
 	}
 	return must(os.Create(*flagOutput)), false
 }
