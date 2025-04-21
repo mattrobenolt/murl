@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -123,6 +124,36 @@ func main() {
 	for i := 0; i < len(urls); {
 		url := urls[i]
 		u := must(parseURL(url))
+		if *flagVerbose {
+			hostname, port := splitHostPort(u.Host)
+			if port == "" {
+				switch u.Scheme {
+				case "http":
+					port = "80"
+				case "https":
+					port = "443"
+				}
+			}
+			ips := must(net.DefaultResolver.LookupIP(ctx, "ip4", hostname))
+			stderr.WriteString("* Host ")
+			stderr.WriteString(hostname)
+			stderr.WriteByte(':')
+			stderr.WriteString(port)
+			stderr.WriteString(" was resolved.\n")
+			stderr.WriteString("* IPv4:")
+			first := true
+			for _, ip := range ips {
+				if first {
+					first = false
+					stderr.WriteByte(' ')
+				} else {
+					stderr.WriteString(", ")
+				}
+				stderr.Write(must(ip.AppendText(stderr.AvailableBuffer())))
+			}
+			stderr.WriteByte('\n')
+			stderr.Flush()
+		}
 
 		if stringReader != nil {
 			stringReader.Seek(0, io.SeekStart)
