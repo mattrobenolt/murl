@@ -19,6 +19,8 @@ var (
 	flagHTTP3      = program.Bool("http3", true, "http3")
 	flagHTTP3Only  = program.Bool("http3-only", false, "http3 only")
 	flagHeader     = program.StringSliceP("header", "H", nil, "header")
+	flagHelp       = program.BoolP("help", "h", false, "help")
+	flagInsecure   = program.BoolP("insecure", "k", false, "insecure")
 	flagJSON       = program.String("json", "", "json")
 	flagLocation   = program.BoolP("location", "L", false, "follow redirects")
 	flagMethod     = program.StringP("request", "X", "", "request method")
@@ -26,7 +28,6 @@ var (
 	flagSilent     = program.BoolP("silent", "s", false, "silent mode")
 	flagUser       = program.StringP("user", "u", "", "<user:password>")
 	flagVerbose    = program.BoolP("verbose", "v", false, "verbose")
-	flagHelp       = program.BoolP("help", "h", false, "help")
 )
 
 func init() {

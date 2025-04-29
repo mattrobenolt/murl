@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"crypto/tls"
 	"net"
 	"net/http"
 	"sync"
@@ -31,6 +32,9 @@ func httpTransport() *http.Transport {
 		ExpectContinueTimeout: 1 * time.Second,
 		Protocols:             protocols,
 		DisableCompression:    true,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: *flagInsecure,
+		},
 	}
 	return transport
 }
@@ -38,10 +42,13 @@ func httpTransport() *http.Transport {
 func http3Transport() *http3.Transport {
 	return &http3.Transport{
 		QUICConfig: &quic.Config{
-			HandshakeIdleTimeout: 30 * time.Second,
-			MaxIdleTimeout:       30 * time.Second,
+			HandshakeIdleTimeout: 10 * time.Second,
+			MaxIdleTimeout:       10 * time.Second,
 		},
 		DisableCompression: true,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: *flagInsecure,
+		},
 	}
 }
 
@@ -70,11 +77,9 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 
 	go func() {
 		defer wg.Done()
+		defer cancel2()
 		resp, err := t.h2.RoundTrip(r.WithContext(ctx1))
 		results[0] = result{resp, err}
-		if err == nil {
-			cancel2()
-		}
 	}()
 
 	go func() {
