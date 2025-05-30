@@ -18,7 +18,7 @@ var (
 	flagHTTP2Prior = program.Bool("http2-prior-knowledge", false, "http2 with prior knowledge")
 	flagHTTP3      = program.Bool("http3", true, "http3")
 	flagHTTP3Only  = program.Bool("http3-only", false, "http3 only")
-	flagHeader     = program.StringSliceP("header", "H", nil, "header")
+	flagHeader     = program.StringArrayP("header", "H", nil, "header")
 	flagHelp       = program.BoolP("help", "h", false, "help")
 	flagInsecure   = program.BoolP("insecure", "k", false, "insecure")
 	flagJSON       = program.String("json", "", "json")

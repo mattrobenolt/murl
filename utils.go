@@ -107,16 +107,18 @@ func validOptionalPort(port string) bool {
 	return true
 }
 
-func must[T any](v T, err error) T {
+func die(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func must[T any](v T, err error) T {
+	die(err)
 	return v
 }
 
 func must2[T1 any, T2 any](v1 T1, v2 T2, err error) (T1, T2) {
-	if err != nil {
-		panic(err)
-	}
+	die(err)
 	return v1, v2
 }
